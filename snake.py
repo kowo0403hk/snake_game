@@ -1,13 +1,18 @@
 import pygame
 import config
+from random import randrange
 
 
 class Snake:
     def __init__(self):
-        self.snake_rect = pygame.rect.Rect([200, 200, config.SNAKE_PART_SIZE, config.SNAKE_PART_SIZE])
+        self.snake_rect = pygame.rect.Rect(
+            [randrange(0, config.SCREEN_SIZE, config.GRID_CELL_SIZE),
+             randrange(0, config.SCREEN_SIZE, config.GRID_CELL_SIZE),
+             config.SNAKE_PART_SIZE,
+             config.SNAKE_PART_SIZE])
         self.snake_parts = []
         self.snake_length = len(self.snake_parts) or 1
-        self.move_direction = pygame.Vector2(config.SNAKE_MOVE_DISTANCE, 0)
+        self.move_direction = pygame.Vector2(0, 0)
 
     def move(self):
         self.snake_rect.move_ip(self.move_direction)
