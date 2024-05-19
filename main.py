@@ -51,6 +51,8 @@ if __name__ == "__main__":
         if time_now - time > config.DELAY:
             time = time_now
             snake_parts = snake.move(move_direction)
+        # checks if the movement go beyond the wall
+        # checks if the snake has touched the body
         [pygame.draw.rect(screen, config.SNAKE_COLOR, snake_part) for snake_part in snake_parts]
 
         pygame.display.flip()

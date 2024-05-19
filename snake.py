@@ -22,6 +22,11 @@ class Snake:
 
     def move(self, key_direction):
         valid_direction = self.move_direction.get(key_direction, None)
+        # need to test 2 boundaries
+        # 1. cannot go opposite direction
+        # 2. cannot accept other keys input
+        # if 1 or 2 happens, keeps going the current direction
+        # 3. if we go beyond the screen, it stops
         if valid_direction:
             self.snake_rect.move_ip(valid_direction)
         self.snake_parts.append(self.snake_rect.copy())
