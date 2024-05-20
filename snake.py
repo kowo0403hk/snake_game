@@ -1,4 +1,5 @@
 import pygame
+from pygame import Rect
 from pygame import Vector2
 import config
 from random import randrange
@@ -6,32 +7,34 @@ from random import randrange
 
 class Snake:
     def __init__(self):
-        self.snake_rect = pygame.rect.Rect(
+        self.snake_head: Rect = pygame.rect.Rect(
             [randrange(0, config.SCREEN_SIZE, config.GRID_CELL_SIZE),
              randrange(0, config.SCREEN_SIZE, config.GRID_CELL_SIZE),
              config.SNAKE_PART_SIZE,
              config.SNAKE_PART_SIZE])
-        self.snake_parts = []
+        self.snake_parts: list[Rect] = []
         self.snake_length = len(self.snake_parts) or 1
-        self.move_direction = {
-            "UP": Vector2(0, -config.SNAKE_MOVE_DISTANCE),
-            "DOWN": Vector2(0, config.SNAKE_MOVE_DISTANCE),
-            "LEFT": Vector2(-config.SNAKE_MOVE_DISTANCE, 0),
-            "RIGHT": Vector2(config.SNAKE_MOVE_DISTANCE, 0)
-        }
+        self.current_direction = Vector2(0, 0)
 
-    def move(self, key_direction: str):
-        valid_direction = self.move_direction.get(key_direction, None)
-        # need to test 2 boundaries
-        # 1. cannot go opposite direction
-        # 2. cannot accept other keys input
-        # if 1 or 2 happens, keeps going the current direction
-        # 3. if we go beyond the screen, it stops
-        if valid_direction:
-            self.snake_rect.move_ip(valid_direction)
-        self.snake_parts.append(self.snake_rect.copy())
+    def move(self, key_event: int) -> list[Rect]:
+        valid_movement = None
+        if key_event == pygame.K_UP and not self.current_direction[1] > 0:
+            valid_movement = Vector2(0, -config.SNAKE_MOVE_DISTANCE)
+        if key_event == pygame.K_DOWN and not self.current_direction[1] < 0:
+            valid_movement = Vector2(0, config.SNAKE_MOVE_DISTANCE)
+        if key_event == pygame.K_LEFT and not self.current_direction[0] > 0:
+            valid_movement = Vector2(-config.SNAKE_MOVE_DISTANCE, 0)
+        if key_event == pygame.K_RIGHT and not self.current_direction[0] < 0:
+            valid_movement = Vector2(config.SNAKE_MOVE_DISTANCE, 0)
+
+        if valid_movement:
+            self.snake_head.move_ip(valid_movement)
+            self.current_direction = valid_movement
+        else:
+            self.snake_head.move_ip(self.current_direction)
+        self.snake_parts.append(self.snake_head.copy())
         self.snake_parts = self.snake_parts[-self.snake_length:]
         return self.snake_parts
 
-    def consumes_apple(self):
+    def consumes_apple(self) -> None:
         self.snake_length += 1
