@@ -1,4 +1,5 @@
 # Snake Game
+![snake](https://github.com/kowo0403hk/snake_game/blob/master/resources/sample.png?raw=true)
 
 This is a simple snake game project by utilizing the pygame library.
 
