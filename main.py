@@ -1,16 +1,21 @@
 import pygame
+from pygame import Rect
 import config
 from snake import Snake
+from random import randrange
 
 screen = pygame.display.set_mode((config.SCREEN_SIZE, config.SCREEN_SIZE))
 clock = pygame.time.Clock()
 time = None
 running = True
 begin = True
+generated_apple = False
 
 snake = None
 snake_parts = []
 move_direction = ""
+
+apple_rect = None
 
 
 def draw_grid_lines() -> None:
@@ -31,12 +36,23 @@ def capture_key(key) -> str:
     return ""
 
 
+def generate_apple() -> Rect:
+    return pygame.rect.Rect([randrange(0, config.SCREEN_SIZE, config.GRID_CELL_SIZE),
+                             randrange(0, config.SCREEN_SIZE, config.GRID_CELL_SIZE), config.APPLE_SIZE,
+                             config.APPLE_SIZE])
+
+
 if __name__ == "__main__":
     while running:
         if begin:
             begin = False
             time = 0
             snake = Snake()
+
+        if not generated_apple:
+            apple_rect = generate_apple()
+            generated_apple = True
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 running = False
@@ -51,9 +67,16 @@ if __name__ == "__main__":
         if time_now - time > config.DELAY:
             time = time_now
             snake_parts = snake.move(move_direction)
+
+        pygame.draw.rect(screen, config.APPLE_COLOR, apple_rect, 0, 10)
         # checks if the movement go beyond the wall
         # checks if the snake has touched the body
-        [pygame.draw.rect(screen, config.SNAKE_COLOR, snake_part) for snake_part in snake_parts]
+        [pygame.draw.rect(screen, config.SNAKE_COLOR, snake_part, 8, 4) for snake_part in snake_parts]
+
+        # apple consumption
+        if snake.snake_rect.center == apple_rect.center:
+            snake.consumes_apple()
+            generated_apple = False
 
         pygame.display.flip()
         clock.tick(config.FPS)

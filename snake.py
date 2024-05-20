@@ -20,7 +20,7 @@ class Snake:
             "RIGHT": Vector2(config.SNAKE_MOVE_DISTANCE, 0)
         }
 
-    def move(self, key_direction):
+    def move(self, key_direction: str):
         valid_direction = self.move_direction.get(key_direction, None)
         # need to test 2 boundaries
         # 1. cannot go opposite direction
@@ -32,3 +32,6 @@ class Snake:
         self.snake_parts.append(self.snake_rect.copy())
         self.snake_parts = self.snake_parts[-self.snake_length:]
         return self.snake_parts
+
+    def consumes_apple(self):
+        self.snake_length += 1
